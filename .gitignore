@@ -1,0 +1,60 @@
+# Environnement Python
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.eggs/
+dist/
+build/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Secrets et config locale
+.env
+.env.*
+!.env.example
+!config/.env.example
+
+# Assets générés (ne pas versionner les rendus)
+assets/images/**
+!assets/images/.gitkeep
+
+# LoRA entraînés (fichiers lourds)
+lora/**
+!lora/.gitkeep
+
+# Dataset : images de référence (locales, potentiellement volumineuses)
+dataset/**
+!dataset/README.md
+
+# Workflows exportés (optionnel — décommenter si tu préfères les versionner)
+# workflows/*.json
+
+# Logs et temporaires
+*.log
+*.tmp
+.cache/
+tmp/
+temp/
+
+# OS / éditeur
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+.idea/
+.vscode/
+*.code-workspace
+
+# ComfyUI / modèles (si copiés localement par erreur)
+models/
+checkpoints/
+*.safetensors
+*.ckpt
+*.pt
+*.pth

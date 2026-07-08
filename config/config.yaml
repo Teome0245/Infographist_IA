@@ -1,0 +1,47 @@
+project:
+  assets_dir: "assets/images"
+  dataset_dir: "dataset"
+  workflows_dir: "workflows"
+
+infra:
+  # LOCAL ou DISTRIBUTED (peut être surchargé par env INFRA_MODE)
+  mode: "LOCAL"
+
+  local:
+    base_url: "http://127.0.0.1:8188"
+    request_timeout_s: 30
+    poll_interval_s: 2
+    job_timeout_s: 1800
+
+  distributed:
+    # Sélection via env INFRA_TARGET=110|140 (sinon 110)
+    targets:
+      "110":
+        base_url: "https://infra-110.example.com/comfy"
+      "140":
+        base_url: "https://infra-140.example.com/comfy"
+    request_timeout_s: 60
+    poll_interval_s: 3
+    job_timeout_s: 7200
+
+storage:
+  # Stratégie de stockage pour DISTRIBUTED: "S3" ou "NONE"
+  backend: "S3"
+  s3:
+    bucket: "my-mmorpgh-assets-bucket"
+    prefix: "infographiste-virtuel"
+    region: "eu-west-3"
+
+workflow:
+  # Option A (recommandé) : déclarer les node_id à patcher
+  # - prompt_nodes: IDs des nodes qui portent du texte (ex: CLIPTextEncode)
+  # - lora_nodes: IDs des nodes de type LoraLoader
+  #
+  # Option B : laisser vide -> patch heuristique (cherche class_type connus)
+  prompt_nodes: []
+  lora_nodes: []
+
+lora:
+  # Dossier local où tu stockes les LoRA entraînés (safetensors)
+  local_lora_dir: "lora"
+
