@@ -33,13 +33,14 @@ storage:
     region: "eu-west-3"
 
 workflow:
-  # Option A (recommandé) : déclarer les node_id à patcher
-  # - prompt_nodes: IDs des nodes qui portent du texte (ex: CLIPTextEncode)
-  # - lora_nodes: IDs des nodes de type LoraLoader
-  #
-  # Option B : laisser vide -> patch heuristique (cherche class_type connus)
-  prompt_nodes: []
-  lora_nodes: []
+  # Node IDs pour workflow_sd15_lowvram.json / workflow_sd15_lora_lowvram.json
+  prompt_nodes: ["6"]
+  negative_nodes: ["7"]
+  lora_nodes: ["10"]
+
+dataset:
+  # Symlink vers NAS (après scripts/mount_nas_dataset.sh)
+  inspiration_dir: "dataset/inspiration_mmorpg"
 
 lora:
   # Dossier local où tu stockes les LoRA entraînés (safetensors)

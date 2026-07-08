@@ -38,6 +38,7 @@ def patch_workflow(
     prompt_text: str | None = None,
     lora_name: str | None = None,
     prompt_nodes: list[str] | None = None,
+    negative_nodes: list[str] | None = None,
     lora_nodes: list[str] | None = None,
     negative_prompt: str | None = None,
     seed: int | None = None,
@@ -46,22 +47,25 @@ def patch_workflow(
     prompt: dict[str, Any] = patched["prompt"]
 
     explicit_prompt_nodes = set(prompt_nodes or [])
+    explicit_negative_nodes = set(negative_nodes or [])
     explicit_lora_nodes = set(lora_nodes or [])
 
     for node_id, node in _iter_nodes(prompt):
         class_type = node.get("class_type", "")
         inputs = node.setdefault("inputs", {})
 
-        if prompt_text and (
-            node_id in explicit_prompt_nodes
-            or (not explicit_prompt_nodes and class_type in PROMPT_CLASS_TYPES)
-        ):
-            if "text" in inputs:
+        if prompt_text and node_id in explicit_prompt_nodes and "text" in inputs:
+            inputs["text"] = prompt_text
+        elif prompt_text and not explicit_prompt_nodes and class_type in PROMPT_CLASS_TYPES:
+            title = str(node.get("_meta", {}).get("title", "")).lower()
+            if "negative" not in title and "text" in inputs:
                 inputs["text"] = prompt_text
 
-        if negative_prompt and class_type in PROMPT_CLASS_TYPES and "text" in inputs:
+        if negative_prompt and node_id in explicit_negative_nodes and "text" in inputs:
+            inputs["text"] = negative_prompt
+        elif negative_prompt and not explicit_negative_nodes and class_type in PROMPT_CLASS_TYPES:
             title = str(node.get("_meta", {}).get("title", "")).lower()
-            if "negative" in title or node_id in explicit_prompt_nodes:
+            if "negative" in title and "text" in inputs:
                 inputs["text"] = negative_prompt
 
         if lora_name and (

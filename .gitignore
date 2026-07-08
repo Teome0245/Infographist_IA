@@ -20,6 +20,11 @@ htmlcov/
 !.env.example
 !config/.env.example
 
+# Dataset : images de référence (locales, potentiellement volumineuses)
+dataset/**
+!dataset/README.md
+!dataset/kohya_train/.gitkeep
+
 # Assets générés (ne pas versionner les rendus)
 assets/images/**
 !assets/images/.gitkeep
@@ -27,10 +32,6 @@ assets/images/**
 # LoRA entraînés (fichiers lourds)
 lora/**
 !lora/.gitkeep
-
-# Dataset : images de référence (locales, potentiellement volumineuses)
-dataset/**
-!dataset/README.md
 
 # Workflows exportés (optionnel — décommenter si tu préfères les versionner)
 # workflows/*.json

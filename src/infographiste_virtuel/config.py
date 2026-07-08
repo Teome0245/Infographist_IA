@@ -42,6 +42,7 @@ class StorageConfig:
 @dataclass
 class WorkflowConfig:
     prompt_nodes: list[str] = field(default_factory=list)
+    negative_nodes: list[str] = field(default_factory=list)
     lora_nodes: list[str] = field(default_factory=list)
 
 
@@ -138,6 +139,7 @@ def load_config(config_path: Path | None = None, env_path: Path | None = None) -
         storage=storage,
         workflow=WorkflowConfig(
             prompt_nodes=list(workflow_raw.get("prompt_nodes", [])),
+            negative_nodes=list(workflow_raw.get("negative_nodes", [])),
             lora_nodes=list(workflow_raw.get("lora_nodes", [])),
         ),
     )

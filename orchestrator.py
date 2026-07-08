@@ -13,6 +13,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent / "src"))
 from infographiste_virtuel.comfy_client import ComfyUIClient
 from infographiste_virtuel.config import load_config
 from infographiste_virtuel.dataset import print_dataset_report, scan_dataset
+from infographiste_virtuel.kohya_dataset import prepare_kohya_dataset, print_kohya_prep_report
 from infographiste_virtuel.storage import StorageManager
 from infographiste_virtuel.workflow_patch import load_workflow, patch_workflow
 
@@ -34,6 +35,13 @@ def build_parser() -> argparse.ArgumentParser:
     gen_cmd.add_argument("--seed", type=int, default=None)
     gen_cmd.add_argument("--output-dir", type=Path, default=None)
     gen_cmd.add_argument("--upload", action="store_true", help="Uploader dataset/LoRA vers S3 (DISTRIBUTED)")
+
+    prep_cmd = sub.add_parser("prepare-dataset", help="Préparer dataset Kohya depuis inspiration NAS")
+    prep_cmd.add_argument("--source", type=Path, default=None, help="Dossier images source")
+    prep_cmd.add_argument("--output", type=Path, default=None, help="Dossier sortie kohya_train")
+    prep_cmd.add_argument("--repeats", type=int, default=10, help="Repeats Kohya (préfixe dossier)")
+    prep_cmd.add_argument("--trigger", type=str, default="mmorpg_insp", help="Trigger word / nom dossier")
+    prep_cmd.add_argument("--max-images", type=int, default=None, help="Limiter le nombre d'images")
 
     return parser
 
@@ -71,6 +79,7 @@ def cmd_generate(args: argparse.Namespace) -> int:
         negative_prompt=args.negative_prompt,
         lora_name=args.lora,
         prompt_nodes=cfg.workflow.prompt_nodes,
+        negative_nodes=cfg.workflow.negative_nodes,
         lora_nodes=cfg.workflow.lora_nodes,
         seed=args.seed,
     )
@@ -91,6 +100,22 @@ def cmd_generate(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_prepare_dataset(args: argparse.Namespace) -> int:
+    cfg = load_config()
+    source = args.source or cfg.dataset_dir
+    output = args.output or (cfg.project_root / "dataset" / "kohya_train")
+
+    report = prepare_kohya_dataset(
+        source,
+        output,
+        repeats=args.repeats,
+        trigger_word=args.trigger,
+        max_images=args.max_images,
+    )
+    print_kohya_prep_report(report)
+    return 0
+
+
 def main() -> int:
     parser = build_parser()
     args = parser.parse_args()
@@ -99,6 +124,8 @@ def main() -> int:
         return cmd_scan(args)
     if args.command == "generate":
         return cmd_generate(args)
+    if args.command == "prepare-dataset":
+        return cmd_prepare_dataset(args)
     return 0
 
 
