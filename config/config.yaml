@@ -1,7 +1,8 @@
 project:
-  assets_dir: "assets/images"
-  dataset_dir: "dataset"
+  assets_dir: "/mnt/b/Infographiste_IA/assets/images"
+  dataset_dir: "dataset/inspiration_mmorpg"
   workflows_dir: "workflows"
+  data_root: "/mnt/b/Infographiste_IA"
 
 infra:
   # LOCAL ou DISTRIBUTED (peut être surchargé par env INFRA_MODE)
@@ -43,6 +44,6 @@ dataset:
   inspiration_dir: "dataset/inspiration_mmorpg"
 
 lora:
-  # Dossier local où tu stockes les LoRA entraînés (safetensors)
-  local_lora_dir: "lora"
+  local_lora_dir: "/mnt/b/Infographiste_IA/lora"
+  kohya_train_dir: "/mnt/b/Infographiste_IA/kohya_train"
 

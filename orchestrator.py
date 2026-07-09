@@ -42,6 +42,7 @@ def build_parser() -> argparse.ArgumentParser:
     prep_cmd.add_argument("--repeats", type=int, default=10, help="Repeats Kohya (préfixe dossier)")
     prep_cmd.add_argument("--trigger", type=str, default="mmorpg_insp", help="Trigger word / nom dossier")
     prep_cmd.add_argument("--max-images", type=int, default=None, help="Limiter le nombre d'images")
+    prep_cmd.add_argument("--copy", action="store_true", help="Copier les images (requis pour Kohya Windows)")
 
     return parser
 
@@ -111,6 +112,7 @@ def cmd_prepare_dataset(args: argparse.Namespace) -> int:
         repeats=args.repeats,
         trigger_word=args.trigger,
         max_images=args.max_images,
+        use_symlinks=not args.copy,
     )
     print_kohya_prep_report(report)
     return 0

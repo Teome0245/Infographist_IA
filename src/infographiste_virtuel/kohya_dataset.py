@@ -51,7 +51,11 @@ def prepare_kohya_dataset(
         if use_symlinks:
             dest_img.symlink_to(item.path.resolve())
         else:
-            shutil.copy2(item.path, dest_img)
+            try:
+                shutil.copy2(item.path, dest_img)
+            except (PermissionError, OSError):
+                # drvfs (B:, NAS) : copie sans métadonnées
+                shutil.copyfile(item.path, dest_img)
 
         caption_path = dest_img.with_suffix(".txt")
         if item.has_caption:
