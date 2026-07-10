@@ -1,48 +1,47 @@
 # Mode DISTRIBUTED (Infra 110 / 140)
 
-Objectif : utiliser le même `orchestrator.py` mais en routant vers un endpoint distant (ComfyUI managé) et en gérant un stockage partagé (ex: S3).
+Voir **`docs/INFRA_LAN.md`** pour la topologie complète (Proxmox, NAS, systemd, Nginx).
 
-## Variables d'environnement
+## Résumé LAN
 
-Voir `config/.env.example`. Les plus importantes :
+| Cible | URL ComfyUI | Usage |
+|-------|-------------|-------|
+| **140** (recommandé) | `http://192.168.0.140:8188` | GPU worker direct |
+| **110** (proxy) | `http://192.168.0.110:8189` | Nginx → 140 |
 
-- `INFRA_MODE=DISTRIBUTED`
-- `INFRA_TARGET=110` (ou `140`)
-- `COMFY_REMOTE_URL_110` / `COMFY_REMOTE_URL_140`
-- `S3_BUCKET`, `S3_PREFIX`, `AWS_REGION`
-- `COMFY_JOB_TIMEOUT_S` plus élevé (batchs lourds)
-
-## Stockage (ex: S3)
-
-Deux stratégies possibles :
-
-1) **Uploader le `dataset/`** et entraîner le LoRA sur l'infra (si tu as un job d'entraînement côté infra).
-2) **Entraîner localement**, puis uploader le LoRA `.safetensors` vers S3, et faire pointer ComfyUI distant vers cet objet (selon ta manière de déployer ComfyUI).
-
-Script d'upload :
+## Activation (poste dev)
 
 ```bash
-export S3_BUCKET="..."
-export S3_PREFIX="infographiste-virtuel"
-./scripts/upload_to_s3.sh dataset
-./scripts/upload_to_s3.sh lora/my_lora.safetensors
+./scripts/switch_infra.sh distributed
+./scripts/healthcheck_lan.sh
 ```
 
-## Endpoint ComfyUI distant
+## Variables
 
-Le code suppose que l'API ComfyUI est exposée via :
+Voir `config/.env.distributed.example` :
+
+- `INFRA_MODE=DISTRIBUTED`
+- `INFRA_TARGET=140`
+- `STORAGE_BACKEND=NAS`
+- `NAS_MOUNT_PATH=/mnt/nas_lbg/Infographiste_IA`
+
+## Stockage NAS
+
+Dataset, LoRA, assets et exports `.glb` sur :
+
+`//Nas_lbg/nas/LBG_Cloud_Drive/Infographiste_IA`
+
+Script montage Debian (VM) : `infra/scripts/mount_nas_debian.sh`
+
+## Endpoint ComfyUI
+
 - `POST /prompt`
 - `GET /history/<prompt_id>`
-- `GET /view?filename=...&subfolder=...&type=...`
+- `GET /view?filename=...`
 
-Si ton infra passe par un proxy (auth, prefix path), adapte `base_url` dans `config/config.yaml` ou via env.
+Auth optionnelle : `COMFY_AUTH_HEADER` / `COMFY_AUTH_VALUE`
 
-## Sécurité
+## S3 (plus tard)
 
-Recommandations (à implémenter côté infra) :
-- mTLS ou JWT/Bearer token côté gateway
-- allowlist IP / VPN
-- rate limiting par client
-
-Le client Python accepte des headers custom via env `COMFY_AUTH_HEADER` / `COMFY_AUTH_VALUE` (voir config du module).
+Le backend S3 reste disponible si tu passes sur MinIO ; pour l'instant **NAS uniquement**.
 
