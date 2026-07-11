@@ -18,15 +18,9 @@ case "${MODE}" in
     if [[ -f "${PROJECT_DIR}/.env" ]]; then
       cp "${PROJECT_DIR}/.env" "${PROJECT_DIR}/.env.bak.$(date +%Y%m%d%H%M%S)"
     fi
-    grep -v '^INFRA_MODE=' "${PROJECT_DIR}/config/.env.example" 2>/dev/null | \
-      grep -v '^COMFY_REMOTE' > "${PROJECT_DIR}/.env.tmp" || true
-    {
-      echo "INFRA_MODE=LOCAL"
-      cat "${PROJECT_DIR}/.env.tmp" 2>/dev/null || cat "${PROJECT_DIR}/config/.env.example"
-    } > "${PROJECT_DIR}/.env"
-    rm -f "${PROJECT_DIR}/.env.tmp"
-  sed -i 's/\r$//' "${PROJECT_DIR}/.env"
-    echo "Mode LOCAL activé."
+    cp "${PROJECT_DIR}/config/.env.local.example" "${PROJECT_DIR}/.env"
+    sed -i 's/\r$//' "${PROJECT_DIR}/.env"
+    echo "Mode LOCAL activé (GPU PC Windows, VMs sans rendu)."
     ;;
   distributed)
     cp "${PROJECT_DIR}/config/.env.distributed.example" "${PROJECT_DIR}/.env"

@@ -19,6 +19,7 @@ htmlcov/
 .env.*
 !.env.example
 !config/.env.example
+!config/.env.local.example
 !config/.env.distributed.example
 
 # Dataset : images de référence (locales, potentiellement volumineuses)
