@@ -8,9 +8,25 @@ from pathlib import Path
 from typing import Any
 
 import yaml
-from dotenv import load_dotenv
+
+try:
+    from dotenv import load_dotenv
+except ImportError:  # classify/scan sans venv ComfyUI
+
+    def load_dotenv(*_args: object, **_kwargs: object) -> bool:
+        return False
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
+
+
+def _project_root() -> Path:
+    return PROJECT_ROOT
+
+
+def _default_dataset_dir() -> Path:
+    return PROJECT_ROOT / "dataset" / "inspiration_mmorpg"
+
+
 DEFAULT_CONFIG_PATH = PROJECT_ROOT / "config" / "config.yaml"
 
 

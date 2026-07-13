@@ -10,14 +10,20 @@ from pathlib import Path
 # Ajoute src/ au PYTHONPATH pour exécution directe
 sys.path.insert(0, str(Path(__file__).resolve().parent / "src"))
 
-from infographiste_virtuel.config import load_config
 from infographiste_virtuel.dataset import print_dataset_report, scan_dataset
-from infographiste_virtuel.kohya_dataset import prepare_kohya_dataset, print_kohya_prep_report
 from infographiste_virtuel.style_classifier import (
     prepare_style_kohya_datasets,
     scan_and_classify,
     sort_into_style_dirs,
 )
+
+
+def _project_root() -> Path:
+    return Path(__file__).resolve().parent
+
+
+def _default_dataset_dir() -> Path:
+    return _project_root() / "dataset" / "inspiration_mmorpg"
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -73,6 +79,8 @@ def build_parser() -> argparse.ArgumentParser:
 
 
 def cmd_scan(args: argparse.Namespace) -> int:
+    from infographiste_virtuel.config import load_config
+
     cfg = load_config()
     dataset_dir = args.dataset_dir or cfg.dataset_dir
     report = scan_dataset(dataset_dir)
@@ -84,6 +92,7 @@ def cmd_scan(args: argparse.Namespace) -> int:
 
 
 def cmd_generate(args: argparse.Namespace) -> int:
+    from infographiste_virtuel.config import load_config
     from infographiste_virtuel.comfy_client import ComfyUIClient
     from infographiste_virtuel.storage import StorageManager
     from infographiste_virtuel.workflow_patch import load_workflow, patch_workflow
@@ -130,16 +139,15 @@ def cmd_generate(args: argparse.Namespace) -> int:
     return 0
 
 
-def _default_styles_path(cfg) -> Path:
-    return cfg.project_root / "config" / "art_styles.json"
+def _default_styles_path() -> Path:
+    return _project_root() / "config" / "art_styles.json"
 
 
 def cmd_classify(args: argparse.Namespace) -> int:
     import json as json_mod
 
-    cfg = load_config()
-    dataset_dir = args.dataset_dir or cfg.dataset_dir
-    styles_path = args.styles or _default_styles_path(cfg)
+    dataset_dir = args.dataset_dir or _default_dataset_dir()
+    styles_path = args.styles or _default_styles_path()
     report = scan_and_classify(dataset_dir, styles_path)
 
     sort_counts: dict[str, int] | None = None
@@ -174,10 +182,9 @@ def cmd_classify(args: argparse.Namespace) -> int:
 def cmd_prepare_styles(args: argparse.Namespace) -> int:
     import json as json_mod
 
-    cfg = load_config()
-    dataset_dir = args.dataset_dir or cfg.dataset_dir
-    styles_path = args.styles or _default_styles_path(cfg)
-    output = args.output or (cfg.project_root / "dataset" / "kohya_train_by_style")
+    dataset_dir = args.dataset_dir or _default_dataset_dir()
+    styles_path = args.styles or _default_styles_path()
+    output = args.output or (_project_root() / "dataset" / "kohya_train_by_style")
     report = scan_and_classify(dataset_dir, styles_path)
     prepared = prepare_style_kohya_datasets(
         report,
@@ -198,6 +205,9 @@ def cmd_prepare_styles(args: argparse.Namespace) -> int:
 
 
 def cmd_prepare_dataset(args: argparse.Namespace) -> int:
+    from infographiste_virtuel.config import load_config
+    from infographiste_virtuel.kohya_dataset import prepare_kohya_dataset, print_kohya_prep_report
+
     cfg = load_config()
     source = args.source or cfg.dataset_dir
     output = args.output or (cfg.project_root / "dataset" / "kohya_train")
