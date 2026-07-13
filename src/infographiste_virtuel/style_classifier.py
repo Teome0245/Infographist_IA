@@ -420,11 +420,14 @@ def vision_classify_unclassified(
             tags = cached.get("tags") if isinstance(cached.get("tags"), list) else []
             notes = str(cached.get("notes") or "cache")
         else:
-            style_id, confidence, tags, notes = vision_classify_image(
-                image_path=img.resolve() if img.is_symlink() else img,
-                styles_doc=styles_doc,
-                cfg=ollama_cfg,
-            )
+            try:
+                style_id, confidence, tags, notes = vision_classify_image(
+                    image_path=img.resolve() if img.is_symlink() else img,
+                    styles_doc=styles_doc,
+                    cfg=ollama_cfg,
+                )
+            except Exception as e:  # noqa: BLE001
+                style_id, confidence, tags, notes = "unclassified", 0.0, [], f"error:{type(e).__name__}"
             cache_path.write_text(
                 json.dumps(
                     {
