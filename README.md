@@ -2,8 +2,10 @@
 
 Objectif : automatiser la génération d'assets (paysages, concepts) via l'API de ComfyUI à partir d'un dossier `dataset/` (références pour LoRA), avec deux modes d'exécution interchangeables :
 
-- **LOCAL** : ComfyUI sur ta machine (GPU local), API `:8188`
-- **DISTRIBUTED** : endpoints distants (Infra 110 / 140) + stockage distant (ex: S3)
+- **LOCAL** : ComfyUI sur **PC Windows** (GTX 1050 Ti) — **mode actif**
+- **DISTRIBUTED** : réservé quand une VM (140) aura un GPU — VMs 110/140 = NAS + LLM seulement pour l'instant
+
+> **Mode actuel** : voir `docs/MODE_LOCAL.md` — `./scripts/start_session_local.sh`
 
 ## Structure
 
@@ -47,9 +49,8 @@ Objectif : automatiser la génération d'assets (paysages, concepts) via l'API d
 
 ```bash
 cd Infographiste_IA
-./scripts/bootstrap_venv.sh
-cp config/.env.example .env
-source .venv/bin/activate
+./scripts/start_session_local.sh
+# ou : cp config/.env.local.example .env && ./scripts/bootstrap_venv.sh
 ```
 
 ## Mode LOCAL (ComfyUI sur `localhost:8188`)

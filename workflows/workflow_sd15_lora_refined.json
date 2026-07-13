@@ -1,0 +1,77 @@
+{
+  "prompt": {
+    "4": {
+      "class_type": "CheckpointLoaderSimple",
+      "inputs": {
+        "ckpt_name": "DreamShaper_8_pruned.safetensors"
+      }
+    },
+    "10": {
+      "class_type": "LoraLoader",
+      "inputs": {
+        "lora_name": "mmorpg_insp_lora.safetensors",
+        "strength_model": 0.6,
+        "strength_clip": 0.6,
+        "model": ["4", 0],
+        "clip": ["4", 1]
+      }
+    },
+    "6": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "mmorpg_insp, small floating steampunk drone robot, brass and painted steel, mono-eye, clean silhouette, sharp focus, studio lighting, stylized semi-realistic",
+        "clip": ["10", 1]
+      },
+      "_meta": {
+        "title": "Positive Prompt"
+      }
+    },
+    "7": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "blurry, messy, cluttered, low quality, watermark, text, logo, deformed, extra limbs, extra parts, bad anatomy, noisy, oversaturated, jpeg artifacts, duplicate, ugly, poorly drawn",
+        "clip": ["10", 1]
+      },
+      "_meta": {
+        "title": "Negative Prompt"
+      }
+    },
+    "5": {
+      "class_type": "EmptyLatentImage",
+      "inputs": {
+        "width": 512,
+        "height": 512,
+        "batch_size": 1
+      }
+    },
+    "3": {
+      "class_type": "KSampler",
+      "inputs": {
+        "seed": 42,
+        "steps": 28,
+        "cfg": 6.5,
+        "sampler_name": "euler",
+        "scheduler": "normal",
+        "denoise": 1.0,
+        "model": ["10", 0],
+        "positive": ["6", 0],
+        "negative": ["7", 0],
+        "latent_image": ["5", 0]
+      }
+    },
+    "8": {
+      "class_type": "VAEDecode",
+      "inputs": {
+        "samples": ["3", 0],
+        "vae": ["4", 2]
+      }
+    },
+    "9": {
+      "class_type": "SaveImage",
+      "inputs": {
+        "filename_prefix": "mmorpg_refined",
+        "images": ["8", 0]
+      }
+    }
+  }
+}
