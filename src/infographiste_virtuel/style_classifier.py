@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import hashlib
 import json
 import re
 import shutil
@@ -10,6 +11,7 @@ from pathlib import Path
 from typing import Any
 
 from .dataset import IMAGE_EXTENSIONS, scan_dataset
+from .ollama_vision import OllamaConfig, generate as ollama_generate, ollama_config_from_env
 
 
 def load_art_styles(path: Path) -> dict[str, Any]:
@@ -287,3 +289,188 @@ def prepare_style_kohya_datasets(
         }
 
     return prepared
+
+
+def _style_ids(styles_doc: dict[str, Any]) -> list[str]:
+    styles = styles_doc.get("styles") or {}
+    return [k for k in styles.keys() if isinstance(k, str)]
+
+
+def _vision_prompt(styles_doc: dict[str, Any]) -> str:
+    styles = styles_doc.get("styles") or {}
+    lines = [
+        "Tu es un classificateur d'images pour un MMO.",
+        "Choisis le meilleur style_id parmi la liste, ou 'unclassified' si tu es incertain.",
+        "Réponds STRICTEMENT en JSON avec ces champs:",
+        '{"style_id": "...", "confidence": 0.0-1.0, "tags": ["..."], "notes": "..."}',
+        "",
+        "Styles disponibles:",
+    ]
+    for sid, cfg in styles.items():
+        if not isinstance(sid, str) or not isinstance(cfg, dict):
+            continue
+        label = str(cfg.get("label") or sid)
+        hints = cfg.get("keywords") or cfg.get("folder_hints") or []
+        hints_s = ", ".join(str(x) for x in (hints[:8] if isinstance(hints, list) else []))
+        lines.append(f"- {sid}: {label} (indices: {hints_s})")
+    lines.append("")
+    lines.append("Règles:")
+    lines.append("- Ne renvoie aucun texte hors JSON.")
+    lines.append("- Si ce n'est pas un asset MMO (photo perso, etc.), renvoie unclassified.")
+    return "\n".join(lines)
+
+
+def _safe_parse_json(text: str) -> dict[str, Any] | None:
+    try:
+        data = json.loads(text)
+    except json.JSONDecodeError:
+        return None
+    return data if isinstance(data, dict) else None
+
+
+def _sha1(path: Path) -> str:
+    h = hashlib.sha1()
+    with path.open("rb") as f:
+        for chunk in iter(lambda: f.read(1024 * 1024), b""):
+            h.update(chunk)
+    return h.hexdigest()
+
+
+def vision_classify_image(
+    *,
+    image_path: Path,
+    styles_doc: dict[str, Any],
+    cfg: OllamaConfig | None = None,
+) -> tuple[str, float, list[str], str]:
+    """Classifie une image via Ollama vision.
+
+    Returns: (style_id, confidence, tags, notes)
+    """
+    cfg = cfg or ollama_config_from_env()
+    prompt = _vision_prompt(styles_doc)
+    raw = ollama_generate(cfg, prompt=prompt, image_path=str(image_path))
+    parsed = _safe_parse_json(raw)
+    if not parsed:
+        return "unclassified", 0.0, [], "invalid_json"
+    style_id = str(parsed.get("style_id") or "unclassified")
+    try:
+        conf = float(parsed.get("confidence") or 0.0)
+    except (TypeError, ValueError):
+        conf = 0.0
+    tags = parsed.get("tags")
+    if not isinstance(tags, list):
+        tags = []
+    tags_s = [str(t) for t in tags[:12]]
+    notes = str(parsed.get("notes") or "")
+
+    valid = set(_style_ids(styles_doc))
+    valid.add("unclassified")
+    if style_id not in valid:
+        style_id = "unclassified"
+        conf = 0.0
+    if conf < 0.0:
+        conf = 0.0
+    if conf > 1.0:
+        conf = 1.0
+    return style_id, round(conf, 3), tags_s, notes[:200]
+
+
+def vision_classify_unclassified(
+    *,
+    unclassified_dir: Path,
+    styles_path: Path,
+    output_root: Path,
+    cache_dir: Path | None = None,
+    limit: int | None = None,
+    min_confidence: float = 0.7,
+    ollama_cfg: OllamaConfig | None = None,
+    mode: str = "symlink",
+) -> dict[str, Any]:
+    """Parcourt un dossier d'images (souvent symlinks) et range selon vision.
+
+    Écrit un cache JSON par image (sha1) pour éviter de reclasser.
+    """
+    styles_doc = load_art_styles(styles_path)
+    cache = cache_dir or (output_root / ".cache_vision")
+    cache.mkdir(parents=True, exist_ok=True)
+
+    if not unclassified_dir.is_dir():
+        raise FileNotFoundError(f"Dossier unclassified introuvable: {unclassified_dir}")
+
+    images = [p for p in sorted(unclassified_dir.iterdir()) if p.is_file() and p.suffix.lower() in IMAGE_EXTENSIONS]
+    if limit is not None:
+        images = images[: max(0, int(limit))]
+
+    counts: dict[str, int] = {}
+    decisions: list[dict[str, Any]] = []
+
+    for img in images:
+        try:
+            digest = _sha1(img.resolve() if img.is_symlink() else img)
+        except OSError:
+            digest = img.name
+        cache_path = cache / f"{digest}.json"
+        cached = None
+        if cache_path.is_file():
+            cached = _safe_parse_json(cache_path.read_text(encoding="utf-8", errors="ignore"))
+
+        if cached and isinstance(cached.get("style_id"), str):
+            style_id = cached.get("style_id")
+            confidence = float(cached.get("confidence") or 0.0)
+            tags = cached.get("tags") if isinstance(cached.get("tags"), list) else []
+            notes = str(cached.get("notes") or "cache")
+        else:
+            style_id, confidence, tags, notes = vision_classify_image(
+                image_path=img.resolve() if img.is_symlink() else img,
+                styles_doc=styles_doc,
+                cfg=ollama_cfg,
+            )
+            cache_path.write_text(
+                json.dumps(
+                    {
+                        "image": str(img),
+                        "style_id": style_id,
+                        "confidence": confidence,
+                        "tags": tags,
+                        "notes": notes,
+                    },
+                    ensure_ascii=False,
+                ),
+                encoding="utf-8",
+            )
+
+        final_style = style_id if (style_id != "unclassified" and confidence >= min_confidence) else "unclassified"
+
+        # Range l'image (symlink/copy/move) sous output_root/styles/{style_id}
+        tmp_report = StyleScanReport(root=unclassified_dir, styles_path=styles_path, images=[])
+        dest_dir = (output_root / "styles" / final_style)
+        dest_dir.mkdir(parents=True, exist_ok=True)
+        dest = dest_dir / img.name
+        if not dest.exists() and not dest.is_symlink():
+            if mode == "copy":
+                shutil.copy2(img, dest)
+            elif mode == "move":
+                shutil.move(img, dest)
+            else:
+                dest.symlink_to((img.resolve() if img.is_symlink() else img).resolve())
+
+        counts[final_style] = counts.get(final_style, 0) + 1
+        decisions.append(
+            {
+                "file": img.name,
+                "style_id": style_id,
+                "confidence": confidence,
+                "final_style": final_style,
+                "tags": tags[:6],
+            }
+        )
+
+    return {
+        "ok": True,
+        "scanned": len(images),
+        "min_confidence": min_confidence,
+        "counts": counts,
+        "sample": decisions[:10],
+        "output_root": str(output_root),
+        "cache_dir": str(cache),
+    }

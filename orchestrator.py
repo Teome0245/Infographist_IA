@@ -15,6 +15,7 @@ from infographiste_virtuel.style_classifier import (
     prepare_style_kohya_datasets,
     scan_and_classify,
     sort_into_style_dirs,
+    vision_classify_unclassified,
 )
 
 
@@ -74,6 +75,18 @@ def build_parser() -> argparse.ArgumentParser:
     prep_styles_cmd.add_argument("--output", type=Path, default=None)
     prep_styles_cmd.add_argument("--min-images", type=int, default=15)
     prep_styles_cmd.add_argument("--json", action="store_true")
+
+    vision_cmd = sub.add_parser(
+        "vision-classify",
+        help="Classer unclassified via Ollama vision (v2) puis ranger dans styles/",
+    )
+    vision_cmd.add_argument("--unclassified-dir", type=Path, default=None)
+    vision_cmd.add_argument("--styles", type=Path, default=None)
+    vision_cmd.add_argument("--output-root", type=Path, default=None)
+    vision_cmd.add_argument("--limit", type=int, default=50)
+    vision_cmd.add_argument("--min-confidence", type=float, default=0.7)
+    vision_cmd.add_argument("--json", action="store_true")
+    vision_cmd.add_argument("--mode", choices=("symlink", "copy", "move"), default="symlink")
 
     return parser
 
@@ -224,6 +237,32 @@ def cmd_prepare_dataset(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_vision_classify(args: argparse.Namespace) -> int:
+    import json as json_mod
+
+    root = _project_root()
+    styles_path = args.styles or (root / "config" / "art_styles.json")
+    output_root = args.output_root or (root / "dataset" / "styles_sorted")
+    unclassified = args.unclassified_dir or (output_root / "styles" / "unclassified")
+
+    report = vision_classify_unclassified(
+        unclassified_dir=unclassified,
+        styles_path=styles_path,
+        output_root=output_root,
+        limit=args.limit,
+        min_confidence=args.min_confidence,
+        mode=args.mode,
+    )
+    if args.json:
+        print(json_mod.dumps(report, ensure_ascii=False, indent=2))
+    else:
+        print(f"Vision classify: {unclassified}")
+        print(f"  output_root: {output_root}")
+        print(f"  scanned: {report.get('scanned')}")
+        print(f"  counts: {report.get('counts')}")
+    return 0
+
+
 def main() -> int:
     parser = build_parser()
     args = parser.parse_args()
@@ -238,6 +277,8 @@ def main() -> int:
         return cmd_classify(args)
     if args.command == "prepare-styles":
         return cmd_prepare_styles(args)
+    if args.command == "vision-classify":
+        return cmd_vision_classify(args)
     return 0
 
 
