@@ -1,0 +1,61 @@
+{
+  "version": 1,
+  "default_style": "unclassified",
+  "styles": {
+    "tatooine_desert": {
+      "label": "Tatooine — extérieur désert",
+      "folder_hints": ["tatooine", "desert", "dune", "mos_eisley", "arid"],
+      "keywords": ["tatooine", "desert", "sand", "dune", "moisture", "vaporator"],
+      "lora": {
+        "trigger_word": "lbg_tatooine",
+        "default_caption": "lbg_tatooine, SWG MMORPG desert planet exterior, sand, harsh sunlight, game concept art",
+        "repeats": 10,
+        "output_name": "tatooine_desert_lora.safetensors"
+      }
+    },
+    "cantina_interior": {
+      "label": "Cantina — intérieur",
+      "folder_hints": ["cantina", "interior", "tavern", "bar"],
+      "keywords": ["cantina", "tavern", "interior", "booth", "neon", "dim light"],
+      "lora": {
+        "trigger_word": "lbg_cantina",
+        "default_caption": "lbg_cantina, SWG MMORPG cantina interior, warm light, cluttered sci-fi bar",
+        "repeats": 10,
+        "output_name": "cantina_interior_lora.safetensors"
+      }
+    },
+    "prime_sprite_2d": {
+      "label": "Prime Client — sprite top-down 2D",
+      "folder_hints": ["sprite", "sprites", "topdown", "2d", "prime"],
+      "keywords": ["sprite", "top-down", "topdown", "isometric", "character sheet"],
+      "lora": {
+        "trigger_word": "lbg_sprite2d",
+        "default_caption": "lbg_sprite2d, top-down MMORPG sprite, clean silhouette, game asset",
+        "repeats": 12,
+        "output_name": "prime_sprite_2d_lora.safetensors"
+      }
+    },
+    "imperial_tech": {
+      "label": "Tech impériale / structures",
+      "folder_hints": ["imperial", "empire", "tech", "base", "facility"],
+      "keywords": ["imperial", "empire", "metal", "bunker", "generator", "industrial"],
+      "lora": {
+        "trigger_word": "lbg_imperial",
+        "default_caption": "lbg_imperial, SWG MMORPG imperial tech structure, grey metal, utilitarian",
+        "repeats": 10,
+        "output_name": "imperial_tech_lora.safetensors"
+      }
+    },
+    "mmorpg_general": {
+      "label": "MMORPG générique (fallback entraînement global)",
+      "folder_hints": ["mmorpg", "inspiration_mmorpg", "general"],
+      "keywords": ["mmorpg", "swg", "galaxies", "mmo", "concept art"],
+      "lora": {
+        "trigger_word": "mmorpg_insp",
+        "default_caption": "mmorpg_insp, fantasy MMORPG concept art, environment, detailed",
+        "repeats": 10,
+        "output_name": "mmorpg_insp_lora.safetensors"
+      }
+    }
+  }
+}
