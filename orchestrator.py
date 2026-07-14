@@ -12,6 +12,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent / "src"))
 
 from infographiste_virtuel.dataset import print_dataset_report, scan_dataset
 from infographiste_virtuel.style_classifier import (
+    prepare_kohya_from_sorted_buckets,
     prepare_style_kohya_datasets,
     scan_and_classify,
     sort_into_style_dirs,
@@ -75,6 +76,12 @@ def build_parser() -> argparse.ArgumentParser:
     prep_styles_cmd.add_argument("--output", type=Path, default=None)
     prep_styles_cmd.add_argument("--min-images", type=int, default=15)
     prep_styles_cmd.add_argument("--json", action="store_true")
+    prep_styles_cmd.add_argument(
+        "--from-sorted",
+        type=Path,
+        default=None,
+        help="Préparer depuis dataset/styles_sorted/styles/ (post vision)",
+    )
 
     vision_cmd = sub.add_parser(
         "vision-classify",
@@ -198,13 +205,25 @@ def cmd_prepare_styles(args: argparse.Namespace) -> int:
     dataset_dir = args.dataset_dir or _default_dataset_dir()
     styles_path = args.styles or _default_styles_path()
     output = args.output or (_project_root() / "dataset" / "kohya_train_by_style")
-    report = scan_and_classify(dataset_dir, styles_path)
-    prepared = prepare_style_kohya_datasets(
-        report,
-        output,
-        min_images=args.min_images,
-    )
-    payload = {"output": str(output), "styles": prepared, "scan": report.to_dict()}
+    sorted_root = args.from_sorted or (_project_root() / "dataset" / "styles_sorted")
+
+    if args.from_sorted is not None or (sorted_root / "styles").is_dir():
+        prepared = prepare_kohya_from_sorted_buckets(
+            sorted_root,
+            output,
+            styles_path,
+            min_images=args.min_images,
+        )
+        scan_payload = {"source": "styles_sorted", "root": str(sorted_root)}
+    else:
+        report = scan_and_classify(dataset_dir, styles_path)
+        prepared = prepare_style_kohya_datasets(
+            report,
+            output,
+            min_images=args.min_images,
+        )
+        scan_payload = report.to_dict()
+    payload = {"output": str(output), "styles": prepared, "scan": scan_payload}
     if args.json:
         print(json_mod.dumps(payload, ensure_ascii=False, indent=2))
     else:

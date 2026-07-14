@@ -291,6 +291,66 @@ def prepare_style_kohya_datasets(
     return prepared
 
 
+def prepare_kohya_from_sorted_buckets(
+    sorted_root: Path,
+    output_dir: Path,
+    styles_path: Path,
+    *,
+    min_images: int = 15,
+) -> dict[str, Any]:
+    """Prépare Kohya depuis dataset/styles_sorted/styles/{style_id}/ (post vision)."""
+    from .kohya_dataset import prepare_kohya_dataset
+
+    styles_doc = load_art_styles(styles_path)
+    styles_cfg = styles_doc.get("styles") or {}
+    prepared: dict[str, Any] = {}
+    styles_dir = sorted_root / "styles"
+    if not styles_dir.is_dir():
+        return {"error": f"dossier styles absent: {styles_dir}"}
+
+    for style_dir in sorted(styles_dir.iterdir()):
+        if not style_dir.is_dir() or style_dir.name == "unclassified":
+            continue
+        style_id = style_dir.name
+        images = [
+            p for p in sorted(style_dir.iterdir())
+            if p.is_file() and p.suffix.lower() in IMAGE_EXTENSIONS
+        ]
+        if len(images) < min_images:
+            prepared[style_id] = {
+                "ok": False,
+                "count": len(images),
+                "reason": f"moins de {min_images} images dans {style_dir}",
+            }
+            continue
+
+        style_cfg = styles_cfg.get(style_id) or {}
+        lora_cfg = style_cfg.get("lora") or {}
+        trigger = str(lora_cfg.get("trigger_word") or style_id)
+        repeats = int(lora_cfg.get("repeats") or 10)
+        default_caption = str(lora_cfg.get("default_caption") or f"{trigger}, MMORPG concept art")
+
+        kohya_report = prepare_kohya_dataset(
+            style_dir,
+            output_dir,
+            repeats=repeats,
+            trigger_word=trigger,
+            default_caption=default_caption,
+            use_symlinks=True,
+        )
+        prepared[style_id] = {
+            "ok": True,
+            "count": len(images),
+            "source": str(style_dir),
+            "trigger_word": trigger,
+            "repeats": repeats,
+            "kohya_folder": f"{kohya_report.repeats}_{kohya_report.trigger_word}",
+            "output_lora": lora_cfg.get("output_name"),
+        }
+
+    return prepared
+
+
 def _style_ids(styles_doc: dict[str, Any]) -> list[str]:
     styles = styles_doc.get("styles") or {}
     return [k for k in styles.keys() if isinstance(k, str)]
