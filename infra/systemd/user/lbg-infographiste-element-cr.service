@@ -1,0 +1,13 @@
+[Unit]
+Description=Infographiste — CR Element périodique (15 min)
+After=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=/home/sdesh/projects/Infographiste_IA
+ExecStart=/home/sdesh/projects/Infographiste_IA/scripts/report_vision_element_loop.sh
+Restart=always
+RestartSec=30
+
+[Install]
+WantedBy=default.target

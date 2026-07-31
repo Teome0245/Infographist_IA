@@ -1,0 +1,12 @@
+{
+  "character_id": "npc_guide",
+  "label": "Guide local — PNJ mentor",
+  "seed": 88011,
+  "lora": "mmorpg_insp_lora.safetensors",
+  "art_notes_fr": "Présence rassurante, regard calme. Robe de voyage en couches, détails discrets type carnet ou boussole. Palette terre + bleu profond.",
+  "identity_lock": "same wise middle-aged guide, braided dark hair with silver streak, deep blue layered travel robe, utility sash, subtle compass pendant, warm brown skin, calm attentive eyes, trustworthy mentor face",
+  "framing": "warcraft style dialogue bust portrait, head and shoulders, slight three-quarter view, eyes toward viewer, centered, soft studio key light from left, dark neutral gradient background, clean silhouette",
+  "palette": "deep blue robe, earth brown leather, silver hair streak, warm skin",
+  "expressions": ["neutral", "happy", "determined", "talk_1", "talk_2"],
+  "negative_extra": "aggressive pose, weapon prominent, anime, chibi, full body, tiny face, cluttered background, multiple people, watermark, text"
+}

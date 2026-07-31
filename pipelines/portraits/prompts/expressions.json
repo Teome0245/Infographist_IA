@@ -1,0 +1,11 @@
+{
+  "neutral": "calm neutral expression, closed relaxed mouth, steady attentive eyes, readable neutral face for dialogue UI",
+  "happy": "clear visible smile, raised cheeks, bright happy eyes, mouth corners up, unmistakable cheerful expression, game dialogue happy face",
+  "angry": "clear angry expression, furrowed brows, tense jaw, narrowed eyes, visible displeasure, readable angry dialogue face",
+  "sad": "clear sad expression, downturned mouth, softened sorrowful eyes, visible melancholy, readable sad dialogue face",
+  "surprised": "clear surprised expression, widened eyes, raised brows, parted lips, visible shock, readable surprised dialogue face",
+  "determined": "clear determined expression, focused narrowed eyes, firm set jaw, resolute mouth, visible resolve, readable stern dialogue face",
+  "neutral_blink": "neutral expression, eyes closed mid blink, relaxed mouth",
+  "talk_1": "mid speech talking portrait, mouth clearly open, visible lower teeth, lips parted for speech, lip sync frame A, readable talking face",
+  "talk_2": "emphatic speech talking portrait, mouth wide open speaking, visible teeth, strong lip sync frame B, readable animated talking face"
+}

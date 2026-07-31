@@ -1,0 +1,11 @@
+{
+  "neutral": "big smile, laughing, angry, shouting",
+  "happy": "neutral mouth, closed lips, frown, angry, sad, mouth closed",
+  "angry": "smile, happy, relaxed brows, gentle expression",
+  "sad": "smile, happy, angry, neutral happy",
+  "surprised": "neutral calm, closed mouth, bored expression",
+  "determined": "smile, silly face, relaxed lazy expression",
+  "neutral_blink": "eyes open, wide eyed",
+  "talk_1": "closed mouth, lips sealed, silent, neutral mouth",
+  "talk_2": "closed mouth, lips sealed, subtle expression, neutral mouth"
+}

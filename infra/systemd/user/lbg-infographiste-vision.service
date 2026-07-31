@@ -1,0 +1,15 @@
+[Unit]
+Description=Infographiste — pipeline vision-classify → prepare-styles
+After=network-online.target
+ConditionPathExists=/home/sdesh/projects/Infographiste_IA/orchestrator.py
+
+[Service]
+Type=simple
+WorkingDirectory=/home/sdesh/projects/Infographiste_IA
+Environment=INFOGRAPHISTE_ELEMENT_REPORT=0
+ExecStart=/bin/bash -c 'LOG=/tmp/infographiste_logs/pipeline_systemd_$(date +%%Y%%m%%d_%%H%%M%%S).log; echo "$LOG" > /tmp/infographiste_logs/current_log.txt; exec bash scripts/run_vision_prepare_pipeline.sh "$LOG"'
+Restart=on-failure
+RestartSec=120
+
+[Install]
+WantedBy=default.target

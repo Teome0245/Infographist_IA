@@ -34,5 +34,6 @@ Seeds : 42001–42004 | Workflow : `workflow_sd15_lora_refined.json`
 
 1. ~~Choisir la meilleure vue~~ → **robot01_round_back.png**
 2. ~~Retopo ~8k tris, UV, bake textures 512/1024~~ → fait via TripoSR + `pack_glb.py` + `simplify_mesh.py`
-3. Importer `robot01_round_godot.glb` dans Godot (échelle / pivot)
+3. Importer `robot01_round_godot.glb` dans Godot (échelle / pivot) — **fait** (`lbg_client_godot`)
 4. (Optionnel) variante web plus légère (~5k tris)
+5. **Pause 3D** (juil. 2026) — priorité Prime Client 2D ; reprise 3D / hybride WC3 plus tard

@@ -1,0 +1,4 @@
+lbg_portrait, expressive dialogue portrait, fantasy sci-fi mmorpg character bust,
+head and shoulders, readable face, clean silhouette, game UI portrait,
+consistent costume, consistent lighting, neutral background, high facial clarity,
+semi-realistic stylized, no text, no watermark, no cluttered background

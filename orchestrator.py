@@ -91,9 +91,20 @@ def build_parser() -> argparse.ArgumentParser:
     vision_cmd.add_argument("--styles", type=Path, default=None)
     vision_cmd.add_argument("--output-root", type=Path, default=None)
     vision_cmd.add_argument("--limit", type=int, default=50)
-    vision_cmd.add_argument("--min-confidence", type=float, default=0.7)
+    vision_cmd.add_argument("--min-confidence", type=float, default=0.55)
     vision_cmd.add_argument("--json", action="store_true")
     vision_cmd.add_argument("--mode", choices=("symlink", "copy", "move"), default="symlink")
+    vision_cmd.add_argument(
+        "--no-wait",
+        action="store_true",
+        help="Refuser immédiatement si un autre job vision tourne (pas de file d'attente)",
+    )
+    vision_cmd.add_argument(
+        "--queue-timeout",
+        type=float,
+        default=None,
+        help="Timeout file d'attente en secondes (défaut: INFOGRAPHISTE_VISION_QUEUE_TIMEOUT_S ou 7200)",
+    )
 
     return parser
 
@@ -259,6 +270,11 @@ def cmd_prepare_dataset(args: argparse.Namespace) -> int:
 def cmd_vision_classify(args: argparse.Namespace) -> int:
     import json as json_mod
 
+    from infographiste_virtuel.config import load_config
+
+    # Charge .env (OLLAMA_* local GPU)
+    load_config()
+
     root = _project_root()
     styles_path = args.styles or (root / "config" / "art_styles.json")
     output_root = args.output_root or (root / "dataset" / "styles_sorted")
@@ -271,6 +287,8 @@ def cmd_vision_classify(args: argparse.Namespace) -> int:
         limit=args.limit,
         min_confidence=args.min_confidence,
         mode=args.mode,
+        wait_queue=False if args.no_wait else None,
+        queue_timeout_s=args.queue_timeout,
     )
     if args.json:
         print(json_mod.dumps(report, ensure_ascii=False, indent=2))
@@ -279,7 +297,14 @@ def cmd_vision_classify(args: argparse.Namespace) -> int:
         print(f"  output_root: {output_root}")
         print(f"  scanned: {report.get('scanned')}")
         print(f"  counts: {report.get('counts')}")
-    return 0
+        if report.get("queue_waited_s"):
+            print(
+                f"  queue: waited {report.get('queue_waited_s')}s "
+                f"(pos ~{report.get('queue_position')})"
+            )
+        if report.get("error"):
+            print(f"  error: {report.get('error')}")
+    return 0 if report.get("ok", True) and not report.get("error") else 1
 
 
 def main() -> int:

@@ -1,0 +1,12 @@
+{
+  "character_id": "npc_bartender",
+  "label": "Tenancier — PNJ social cantina",
+  "seed": 88021,
+  "lora": "mmorpg_insp_lora.safetensors",
+  "art_notes_fr": "Chaleur et charisme. Tablier ou veste de bar sci-fi, manches retroussées. Sourire facile en happy, regard direct en neutral.",
+  "identity_lock": "same friendly cantina bartender, curly auburn hair tied back, rolled sleeves, dark leather vest over cream shirt, small sci-fi bar insignia pin, ruddy warm skin, expressive eyes, charismatic welcoming face",
+  "framing": "warcraft style dialogue bust portrait, head and shoulders, slight three-quarter view, eyes toward viewer, centered, warm amber key light from left, dark neutral gradient background, clean silhouette",
+  "palette": "cream shirt, dark leather vest, copper hair, warm amber highlights",
+  "expressions": ["neutral", "happy", "talk_1", "talk_2"],
+  "negative_extra": "full bar scene, bottles foreground, anime, chibi, full body, tiny face, cluttered background, multiple people, watermark, text"
+}

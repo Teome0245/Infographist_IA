@@ -1,0 +1,12 @@
+{
+  "character_id": "player_human",
+  "label": "Joueur humain — héros relatable",
+  "seed": 88001,
+  "lora": "mmorpg_insp_lora.safetensors",
+  "art_notes_fr": "Visage lisible en petit panneau UI. Costume voyageur sobre, palette froide (bleu-vert / gris). Même personnage sur toutes les expressions : ne changer que le visage.",
+  "identity_lock": "same young human adventurer man, short dark brown hair, light weathering, teal travel coat over grey tunic, brass buckle at collar, olive skin, hazel eyes, approachable grounded hero face, no helmet, no sunglasses",
+  "framing": "warcraft style dialogue bust portrait, head and shoulders, slight three-quarter view, eyes toward viewer, centered, soft studio key light from left, dark neutral gradient background, clean silhouette",
+  "palette": "teal coat, grey cloth, warm skin, muted steel accents",
+  "expressions": ["neutral", "happy", "determined", "talk_1", "talk_2"],
+  "negative_extra": "helmet, mask, sunglasses, anime, chibi, extreme angle, full body, tiny face, busy background, multiple people, watermark, text"
+}

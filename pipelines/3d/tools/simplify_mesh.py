@@ -22,7 +22,14 @@ def main() -> None:
     n_before = len(mesh.faces)
     print(f"Faces avant: {n_before}")
 
-    if n_before > args.target_tris:
+    has_uv = (
+        hasattr(mesh.visual, "uv")
+        and mesh.visual.uv is not None
+        and len(mesh.visual.uv) == len(mesh.vertices)
+    )
+    if has_uv:
+        print("UV détectés — simplification ignorée (fast-simplification casse les UV).")
+    elif n_before > args.target_tris:
         try:
             import fast_simplification
 

@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "characters": {
+    "player_human": {
+      "description": "human player adventurer, relatable protagonist, young adult, practical traveler outfit, neutral fantasy sci-fi mmorpg gear, approachable face, grounded hero, no helmet, no extreme accessories",
+      "expressions": ["neutral", "happy", "determined", "talk_1", "talk_2"]
+    },
+    "npc_guide": {
+      "description": "wise local guide, helpful npc, calm confident posture, layered travel robe or utility outfit, subtle scholarly details, reassuring face, readable silhouette, trustworthy presence",
+      "expressions": ["neutral", "happy", "determined", "talk_1", "talk_2"]
+    },
+    "npc_bartender": {
+      "description": "cantina bartender, friendly social npc, tavern or sci-fi bar attire, warm welcoming expression, slightly worn work outfit, charismatic face, service counter vibe, grounded everyday character",
+      "expressions": ["neutral", "happy", "talk_1", "talk_2"]
+    }
+  }
+}

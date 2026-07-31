@@ -1,0 +1,13 @@
+[Unit]
+Description=Infographiste — reprise vision/CR après boot WSL (.10)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+WorkingDirectory=/home/sdesh/projects/Infographiste_IA
+ExecStart=/home/sdesh/projects/Infographiste_IA/scripts/resume_after_boot.sh
+RemainAfterExit=yes
+
+[Install]
+WantedBy=default.target

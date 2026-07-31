@@ -1,11 +1,17 @@
 {
-  "version": 1,
+  "version": 5,
   "default_style": "unclassified",
+  "vision_rules": {
+    "prefer_assignment": true,
+    "soft_confidence": 0.45,
+    "hard_confidence": 0.7,
+    "unclassified_only_if": "photo IRL hors sujet jeu, capture écran UI OS, ou image illisible"
+  },
   "styles": {
     "tatooine_desert": {
-      "label": "Tatooine — extérieur désert",
-      "folder_hints": ["tatooine", "desert", "dune", "mos_eisley", "arid"],
-      "keywords": ["tatooine", "desert", "sand", "dune", "moisture", "vaporator"],
+      "label": "Tatooine — extérieur désert / arid",
+      "folder_hints": ["tatooine", "desert", "dune", "mos_eisley", "arid", "sand"],
+      "keywords": ["tatooine", "desert", "sand", "dune", "moisture", "vaporator", "canyon", "oasis"],
       "lora": {
         "trigger_word": "lbg_tatooine",
         "default_caption": "lbg_tatooine, SWG MMORPG desert planet exterior, sand, harsh sunlight, game concept art",
@@ -14,9 +20,9 @@
       }
     },
     "cantina_interior": {
-      "label": "Cantina — intérieur",
-      "folder_hints": ["cantina", "interior", "tavern", "bar"],
-      "keywords": ["cantina", "tavern", "interior", "booth", "neon", "dim light"],
+      "label": "Cantina — intérieur / taverne / bar sci-fi",
+      "folder_hints": ["cantina", "interior", "tavern", "bar", "booth"],
+      "keywords": ["cantina", "tavern", "interior", "booth", "neon", "dim light", "bar", "counter"],
       "lora": {
         "trigger_word": "lbg_cantina",
         "default_caption": "lbg_cantina, SWG MMORPG cantina interior, warm light, cluttered sci-fi bar",
@@ -24,21 +30,10 @@
         "output_name": "cantina_interior_lora.safetensors"
       }
     },
-    "prime_sprite_2d": {
-      "label": "Prime Client — sprite top-down 2D",
-      "folder_hints": ["sprite", "sprites", "topdown", "2d", "prime"],
-      "keywords": ["sprite", "top-down", "topdown", "isometric", "character sheet"],
-      "lora": {
-        "trigger_word": "lbg_sprite2d",
-        "default_caption": "lbg_sprite2d, top-down MMORPG sprite, clean silhouette, game asset",
-        "repeats": 12,
-        "output_name": "prime_sprite_2d_lora.safetensors"
-      }
-    },
     "imperial_tech": {
-      "label": "Tech impériale / structures",
-      "folder_hints": ["imperial", "empire", "tech", "base", "facility"],
-      "keywords": ["imperial", "empire", "metal", "bunker", "generator", "industrial"],
+      "label": "Tech impériale / bases / structures métalliques",
+      "folder_hints": ["imperial", "empire", "tech", "base", "facility", "bunker"],
+      "keywords": ["imperial", "empire", "metal", "bunker", "generator", "industrial", "hangar", "star destroyer"],
       "lora": {
         "trigger_word": "lbg_imperial",
         "default_caption": "lbg_imperial, SWG MMORPG imperial tech structure, grey metal, utilitarian",
@@ -46,10 +41,131 @@
         "output_name": "imperial_tech_lora.safetensors"
       }
     },
+    "scifi_city": {
+      "label": "Ville sci-fi / rues / néons / urbex futuriste",
+      "folder_hints": ["city", "street", "neon", "urban", "coruscant", "night"],
+      "keywords": ["city", "street", "neon", "alleys", "skyscraper", "market street", "cyberpunk city"],
+      "lora": {
+        "trigger_word": "lbg_scificity",
+        "default_caption": "lbg_scificity, SWG MMORPG sci-fi city street, neon lights, dense urban concept art",
+        "repeats": 10,
+        "output_name": "scifi_city_lora.safetensors"
+      }
+    },
+    "fantasy_landscape": {
+      "label": "Paysage fantasy / ruines / forêts / environnements",
+      "folder_hints": ["landscape", "ruin", "forest", "mountain", "environment"],
+      "keywords": ["landscape", "ruins", "forest", "mountain", "valley", "mist", "fantasy environment"],
+      "lora": {
+        "trigger_word": "lbg_fantasy_land",
+        "default_caption": "lbg_fantasy_land, fantasy MMORPG environment landscape, ruins, atmospheric concept art",
+        "repeats": 10,
+        "output_name": "fantasy_landscape_lora.safetensors"
+      }
+    },
+    "character_portrait": {
+      "label": "Personnage / portrait / cosplay / hero shot",
+      "folder_hints": ["character", "portrait", "hero", "npc", "cosplay"],
+      "keywords": ["character", "portrait", "hero", "npc", "face", "armor worn", "cosplay", "full body"],
+      "lora": {
+        "trigger_word": "lbg_char",
+        "default_caption": "lbg_char, MMORPG character concept, portrait or full-body, detailed costume",
+        "repeats": 10,
+        "output_name": "character_portrait_lora.safetensors"
+      }
+    },
+    "vehicles_ships": {
+      "label": "Véhicules / vaisseaux / speeder",
+      "folder_hints": ["ship", "vehicle", "speeder", "starship", "transport"],
+      "keywords": ["spaceship", "starship", "speeder", "vehicle", "fighter", "freighter", "landspeeder"],
+      "lora": {
+        "trigger_word": "lbg_vehicle",
+        "default_caption": "lbg_vehicle, SWG MMORPG spaceship or speeder vehicle, game concept art",
+        "repeats": 10,
+        "output_name": "vehicles_ships_lora.safetensors"
+      }
+    },
+    "creatures_alien": {
+      "label": "Créatures / faune alien / bestiaire",
+      "folder_hints": ["creature", "beast", "alien", "fauna", "monster"],
+      "keywords": ["creature", "beast", "alien", "fauna", "monster", "wildlife", "pet"],
+      "lora": {
+        "trigger_word": "lbg_creature",
+        "default_caption": "lbg_creature, SWG MMORPG alien creature, fauna concept art",
+        "repeats": 10,
+        "output_name": "creatures_alien_lora.safetensors"
+      }
+    },
+    "props_gear": {
+      "label": "Props / armes / équipement / objets",
+      "folder_hints": ["prop", "weapon", "gear", "item", "armor"],
+      "keywords": ["weapon", "blaster", "sword", "armor piece", "prop", "item", "gear", "tool"],
+      "lora": {
+        "trigger_word": "lbg_prop",
+        "default_caption": "lbg_prop, MMORPG prop weapon or gear item, clean product concept art",
+        "repeats": 10,
+        "output_name": "props_gear_lora.safetensors"
+      }
+    },
+    "prime_sprite_2d": {
+      "label": "Prime Client — sprite unité top-down 2D",
+      "folder_hints": ["sprite", "sprites", "topdown", "2d", "prime", "unit"],
+      "keywords": ["sprite", "top-down", "topdown", "isometric", "character sheet", "pixel", "orthographic", "game unit", "token"],
+      "lora": {
+        "trigger_word": "lbg_sprite2d",
+        "default_caption": "lbg_sprite2d, top-down MMORPG unit sprite, clean silhouette, game token asset",
+        "repeats": 12,
+        "output_name": "prime_sprite_2d_lora.safetensors"
+      }
+    },
+    "portrait_dialogue": {
+      "label": "Portrait dialogue UI — buste / visage expressif pour interaction narrative",
+      "folder_hints": ["portrait", "dialogue", "face", "expression", "bust", "ui"],
+      "keywords": [
+        "portrait",
+        "dialogue portrait",
+        "facial expression",
+        "character bust",
+        "rpg portrait",
+        "talking portrait",
+        "warcraft style portrait",
+        "character expression"
+      ],
+      "lora": {
+        "trigger_word": "lbg_portrait",
+        "default_caption": "lbg_portrait, expressive dialogue portrait, character bust, readable face, game ui portrait",
+        "repeats": 12,
+        "output_name": "portrait_dialogue_lora.safetensors"
+      }
+    },
+    "map_topdown": {
+      "label": "Carte 2D top-down — terrain, world map, tilemap, vue satellite jeu",
+      "folder_hints": ["map", "carte", "maps", "cartes", "tilemap", "terrain", "worldmap", "overhead"],
+      "keywords": [
+        "map",
+        "carte",
+        "world map",
+        "tilemap",
+        "terrain",
+        "overhead map",
+        "bird eye map",
+        "strategy map",
+        "minimap",
+        "satellite view",
+        "top-down landscape",
+        "game map"
+      ],
+      "lora": {
+        "trigger_word": "lbg_map2d",
+        "default_caption": "lbg_map2d, top-down game map, terrain tile, world map, orthographic overhead, readable game cartography",
+        "repeats": 12,
+        "output_name": "map_topdown_lora.safetensors"
+      }
+    },
     "mmorpg_general": {
-      "label": "MMORPG générique (fallback entraînement global)",
-      "folder_hints": ["mmorpg", "inspiration_mmorpg", "general"],
-      "keywords": ["mmorpg", "swg", "galaxies", "mmo", "concept art"],
+      "label": "MMORPG générique — fallback si thème ambigu mais jeu/concept",
+      "folder_hints": ["mmorpg", "inspiration_mmorpg", "general", "concept"],
+      "keywords": ["mmorpg", "swg", "galaxies", "mmo", "concept art", "game art"],
       "lora": {
         "trigger_word": "mmorpg_insp",
         "default_caption": "mmorpg_insp, fantasy MMORPG concept art, environment, detailed",
